@@ -16,22 +16,8 @@
 #Unity3D Generated File On Crash Reports
 sysinfo.txt
 
-
-# UBB backups
-UBB/
-
 # UnityVS
 Assets/UnityVS/*
 Assets/UnityVS.meta
 
-# Excluded binary files #!UBB!#
-*.wav
-*.wav.meta
-*.ogg
-*.ogg.meta
-*.mp3
-*.mp3.meta
-*.tga
-*.tga.meta
-*.psd
-*.psd.meta
+Assets/lib
