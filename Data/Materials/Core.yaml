@@ -1,0 +1,4 @@
+type: UnityEngine.Material
+textures:
+  - texture: MainTex
+    scale: 100

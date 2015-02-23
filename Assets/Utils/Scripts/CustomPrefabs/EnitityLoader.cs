@@ -7,7 +7,7 @@ using System;
 namespace Utils{
 	public class EnitityLoader : MonoBehaviour {
 
-		string dataFolder = @"Data\";
+		string dataFolder = @"Data/";
 		public Dictionary<string, CustomPrefab> prefabs = new Dictionary<string, CustomPrefab>();
 
 
@@ -23,18 +23,42 @@ namespace Utils{
 			}
 		}
 
+
+		/**
+		 * Loads all prefabs from folder;
+		 */
 		public void LoadPrefabFolder(string dataFolder){
 			foreach(string dataFile in Directory.GetFiles(dataFolder, "*.yaml", SearchOption.AllDirectories)){
-				StreamReader sr = new StreamReader(dataFile);
+				string prefabName = dataFile.Substring (dataFile.LastIndexOf(this.dataFolder)+this.dataFolder.Length, dataFile.LastIndexOf(".")-(dataFile.LastIndexOf(this.dataFolder)+this.dataFolder.Length));
+				LoadPrefab(prefabName);
+			}
+		}
+
+
+		/**
+		 * Loads prefab with provided name
+		 * @param <string> prefanName: Name of loaded prefab
+		 */
+		public void LoadPrefab(string prefabName){
+			LoadPrefab(prefabName,false);
+		}
+		/**
+		 * Loads prefab with provided name
+		 * @param <string> prefanName: Name of loaded prefab
+		 * @param <bool> force: if true, reloads previously loaded prefab
+		 */
+		public void LoadPrefab(string prefabName, bool force){
+			if(!prefabs.ContainsKey(prefabName)||force){
+				StreamReader sr = new StreamReader(dataFolder+prefabName+".yaml");
 				string fileContent = sr.ReadToEnd();
-				string name = dataFile.Substring (dataFile.LastIndexOf("\\")+1, dataFile.LastIndexOf(".")-(dataFile.LastIndexOf("\\")+1));
-				CustomPrefab prefab = new CustomPrefab(name, fileContent);
+				CustomPrefab prefab = new CustomPrefab(prefabName, fileContent);
 				if(prefab.PrepAndVerify()){
-					prefabs.Add (name, prefab);
-					Debug.Log("Prefab "+name+" loaded");
+					prefabs.Add (prefabName, prefab);
+					Debug.Log("Prefab "+prefabName+" loaded");
 				}
 			}
 		}
+
 
 		public GameObject InstantiatePrefab(string prefabName){
 			if(prefabs.ContainsKey(prefabName)){
