@@ -15,9 +15,24 @@ namespace Utils{
 		private List<string> components = new List<string>();
 
 		private GameObject gameObjectCopy;
+		private YamlMappingNode mapping;
 
 		string[] dataLines;
 		int dataPointer = 0;
+		static private Dictionary<string,Color> Colors = new Dictionary<string, Color> {
+			{"black",Color.black},
+			{"blue",Color.blue},
+			{"clear",Color.clear},
+			{"cyan",Color.cyan},
+			{"gray",Color.gray},
+			{"green",Color.green},
+			{"grey",Color.grey},
+			{"magenta",Color.magenta},
+			{"red",Color.red},
+			{"white",Color.white},
+			{"yellow",Color.yellow}
+		};
+
 		Dictionary <string, string> properties = new Dictionary<string, string>();
 
 		public CustomPrefab(string name, string scriptLines){
@@ -81,21 +96,17 @@ namespace Utils{
 			YamlStream yaml = new YamlStream();
 			StringReader input = new StringReader(data);
 			yaml.Load(input);
-			var mapping =
+			mapping =
 				(YamlMappingNode)yaml.Documents[0].RootNode;
 			// Try to get Prefab Type. It can be Exists Class As examle: UnityEngine.GameObject, UnityEngine.Material...
 			try{
 				YamlScalarNode prefType = (YamlScalarNode) mapping.Children[new YamlScalarNode("type")];
 				//type =Type.GetType("UnityEngine.GameObject");
 				type = GetType(prefType.Value.ToString());
-				var instance = Activator.CreateInstance(type);
-
-				Initiate(ref instance);
-				if (instance!= null){
-					Debug.Log ("!!!");
-				}
+				var instance = Construct(type, name);
 				//Debug.Log(instance);
-			}catch{
+			}catch(Exception e){
+				Debug.Log (e.Message);
 				return false;
 			}
 			/*
@@ -129,18 +140,96 @@ namespace Utils{
 
 			return assembly.GetType(typeName);
 		}
-		private bool Initiate(ref object instance){
-			bool retval = true;
-			switch(instance.GetType().ToString()){
+		private dynamic Construct(Type type, string name){
+			//instance = Activator.CreateInstance(type);
+			switch(type.FullName){
 			case "UnityEngine.GameObject":
 				Debug.Log("GameObject Init");
+				return null;
 				break;
 			case "UnityEngine.Material":
 				Debug.Log("Material Init");
-
+				List<string> keys = new List<string>();
+				foreach (var entry in mapping.Children){
+					keys.Add(entry.Key.ToString());
+				}
+				if(!keys.Exists(x=>x=="shader")){
+					throw new Exception("No shader for material");
+				}
+				YamlScalarNode value = (YamlScalarNode) mapping.Children[new YamlScalarNode("shader")];
+				Material instance = new Material(Shader.Find(value.Value));
+				/*foreach(string key in keys){
+					if(key=="type"||key=="shader")
+						continue;
+					switch(key){
+					case "Color":
+						value = (YamlScalarNode) mapping.Children[new YamlScalarNode("color")];
+						instance.color = getYamlColor(value.Value);
+						break;
+					case "MainTex":
+						break;
+					case "MainTex":
+						break;
+					}
+				}*/
+				if(keys.Exists(x=>x=="params")){
+					List<string> parameters = new List<string>();
+					var items = (YamlSequenceNode)mapping.Children[new YamlScalarNode("params")];
+					string iType,iName,iValue;
+					foreach (YamlMappingNode item in items){
+						//parameters.Add(item.Children[new YamlScalarNode("name")].ToString());
+						iType= item.Children[new YamlScalarNode("type")].ToString();
+						iName= item.Children[new YamlScalarNode("name")].ToString();
+						iValue= item.Children[new YamlScalarNode("value")].ToString();
+						switch(iType){
+						case "Color" :
+							instance.SetColor("_"+iName,GetYamlColor(iValue));
+							break;
+						case "Texture":
+							instance.SetTexture("_"+iName,GetYamlTexture(iValue));
+							break;
+						}
+					}
+				}
+				return instance;
+				break;
+			case "UnityEngine.Texture":
+				Debug.Log("Texture Init");
+				return null;
 				break;
 			}
-			return retval;
+			return null;
+		}
+		private Texture GetYamlTexture(string name){
+			return new Texture();
+		}
+		private Color GetYamlColor(string color){
+			string[] rgba = color.Split(' ');
+			Color c = new Color();
+			switch(rgba.Length){
+			case 1:
+				Colors.TryGetValue(color,out c);
+				if(c!=new Color()){
+					Debug.Log ("!");
+					return c;
+				}
+				break;
+			case 3:
+				float.TryParse(rgba[0],out c.r);
+				float.TryParse(rgba[1],out c.g);
+				float.TryParse(rgba[2],out c.b);
+				c.a = 1;
+				break;
+			case 4:
+				float.TryParse(rgba[0],out c.r);
+				float.TryParse(rgba[1],out c.g);
+				float.TryParse(rgba[2],out c.b);
+				float.TryParse(rgba[3],out c.a);
+				break;
+			default:
+				break;
+			}
+			return c;
 		}
 	}
 }

@@ -13,6 +13,7 @@ namespace Utils{
 
 		// Use this for initialization
 		void Start () {
+			LoadPrefabFolder(dataFolder+@"Materials/");
 			LoadPrefabFolder(dataFolder+@"Blocks/");
 		}
 		

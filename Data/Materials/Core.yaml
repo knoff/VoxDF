@@ -1,4 +1,10 @@
 type: UnityEngine.Material
-textures:
-  - texture: MainTex
-    scale: 100
+shader: Standard
+params:
+  - type: Color
+    name: Color
+    value: 0.5 0.5 0.5 1
+#textures:
+#  - type: MainTex
+#    scale: 100,0
+#    texture: Core
