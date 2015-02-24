@@ -214,12 +214,12 @@ GameObject:
   serializedVersion: 4
   m_Component:
   - 4: {fileID: 1529650779}
+  - 114: {fileID: 1529650780}
   - 20: {fileID: 1529650778}
   - 92: {fileID: 1529650777}
   - 124: {fileID: 1529650776}
   - 81: {fileID: 1529650775}
   - 114: {fileID: 1529650774}
-  - 114: {fileID: 1529650780}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -309,8 +309,9 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1529650773}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 02be89c9517525c41a88a906f111d74d, type: 3}
+  m_Script: {fileID: 11500000, guid: 22f8c8565dcc9e945ac79850c06cc609, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  errorFile: error.log

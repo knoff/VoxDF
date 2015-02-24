@@ -1,6 +1,6 @@
-component: Block
-transform:
-  position:
-    x: 1
-    y: 1
-    z: 1
+type: UnityEngine.GameObject
+components:
+  - component: MeshFilter
+    mesh: Cube
+  - component: Collider
+  - component: Block
