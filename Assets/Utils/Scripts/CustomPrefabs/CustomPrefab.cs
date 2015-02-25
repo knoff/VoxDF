@@ -16,7 +16,7 @@ namespace Utils{
 
 		private GameObject gameObjectCopy;
 		private YamlMappingNode mapping;
-
+		public object instance;
 		string[] dataLines;
 		int dataPointer = 0;
 		static private Dictionary<string,Color> Colors = new Dictionary<string, Color> {
@@ -158,6 +158,7 @@ namespace Utils{
 				}
 				YamlScalarNode value = (YamlScalarNode) mapping.Children[new YamlScalarNode("shader")];
 				Material instance = new Material(Shader.Find(value.Value));
+				instance.name = name;
 				/*foreach(string key in keys){
 					if(key=="type"||key=="shader")
 						continue;
@@ -195,6 +196,7 @@ namespace Utils{
 				break;
 			case "UnityEngine.Texture":
 				Debug.Log("Texture Init");
+
 				return null;
 				break;
 			}
@@ -230,6 +232,24 @@ namespace Utils{
 				break;
 			}
 			return c;
+		}
+
+		public dynamic GetInstance(){
+			switch(type.FullName){
+			case "UnityEngine.Material":
+				if(instance==null)
+					instance=Construct(type,name);
+				return instance;
+				break;
+			case "UnityEngine.Texture":
+				if(instance==null)
+					instance=Construct(type,name);
+				return instance;
+				break;
+			default:
+				break;
+			}
+			return null;
 		}
 	}
 }

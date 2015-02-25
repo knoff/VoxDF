@@ -3,8 +3,79 @@ shader: Standard
 params:
   - type: Color
     name: Color
-    value: 0.5 0.5 0.5 1
-#textures:
-#  - type: MainTex
-#    scale: 100,0
-#    texture: Core
+    value: 0.5 0.5 0.5 1.0
+  - type: Texture
+    name: MainTex
+    value: Textures/Core
+#  - type: Range
+#    name: Cutoff
+#    value: 0.0 1.0
+#  - type: Range
+#    name: Glossiness
+#    value: 0.0 1.0
+#  - type: Range
+#    name: Metallic
+#    value: 0.0 1.0
+#  - type: Texture
+#    name: MetallicGlossMap
+#    value: Textures/CoreMG
+#  - type: Float
+#    name: BumpScale
+#    value: 1.0
+#  - type: Texture
+#    name: BumpMap
+#    value: Textures/CoreNM
+#  - type: Range
+#    name: Parallax
+#    value: 0.0 1.1
+#  - type: Texture
+#    name: ParalaxMap
+#    value: Textures/CoreHM
+#  - type: Range
+#    name: OcclusionStrength
+#    value: 0.0 1.0
+#  - type: Texture
+#    name: OcclusionMap
+#    value: Textures/CoreOM
+#  - type: Color
+#    name: EmissionColor
+#    value: white
+#  - type: Texture
+#    name: EmissionMap
+#    value: Textures/CoreEM
+#  - type: Texture
+#    name: DetailMask
+#    value: Textures/CoreDetM
+#  - type: Texture
+#    name: DetailAlbedoMap
+#    value: Textures/CoreDet
+#  - type: Float
+#    name: DetailNormalMapScale
+#    value: 1.0
+#  - type: Texture
+#    name: DetailNormalMap
+#    value: Textures/CoreDetNM
+#  - type: Float
+#    name: UVSec
+#    value: 1.0
+#  - type: Float
+#    name: Lightmapping
+#    value: 1.0
+#  - type: Float
+#    name: EmissionScaleUI
+#    value: 1.0
+#  - type: Color
+#    name: EmissionColorUI
+#    value: 0.0 0.0 0.0 1
+#  - type: Float
+#    name: Mode
+#    value: 1.0
+#  - type: Float
+#    name: SrcBlend
+#    value: 1.0
+#  - type: Float
+#    name: DstBlend
+#    value: 1.0
+#  - type: Float
+#    name: ZWrite
+#    value: 1.0

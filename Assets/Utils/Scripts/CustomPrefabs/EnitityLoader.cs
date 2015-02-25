@@ -8,13 +8,14 @@ namespace Utils{
 	public class EnitityLoader : MonoBehaviour {
 
 		string dataFolder = @"Data/";
-		public Dictionary<string, CustomPrefab> prefabs = new Dictionary<string, CustomPrefab>();
+		private Dictionary<string, CustomPrefab> prefabs = new Dictionary<string, CustomPrefab>();
 
 
 		// Use this for initialization
 		void Start () {
 			LoadPrefabFolder(dataFolder+@"Materials/");
 			LoadPrefabFolder(dataFolder+@"Blocks/");
+			Debug.Log(GetPrefab("Materials/Core").GetInstance());
 		}
 		
 		// Update is called once per frame
@@ -59,7 +60,11 @@ namespace Utils{
 				}
 			}
 		}
-
+		public CustomPrefab GetPrefab(string prefabName){
+			CustomPrefab prefab;
+			prefabs.TryGetValue(prefabName, out prefab);
+			return prefab;
+		}
 
 		public GameObject InstantiatePrefab(string prefabName){
 			if(prefabs.ContainsKey(prefabName)){
