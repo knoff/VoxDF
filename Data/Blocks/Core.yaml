@@ -1,6 +1,7 @@
 type: UnityEngine.GameObject
 components:
   - component: MeshFilter
-    mesh: Cube
-  - component: Collider
-  - component: Block
+    mesh: Mesh Cube
+  - component: MeshRenderer
+#  - component: Collider
+#  - component: Block

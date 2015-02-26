@@ -103,7 +103,12 @@ namespace Utils{
 				YamlScalarNode prefType = (YamlScalarNode) mapping.Children[new YamlScalarNode("type")];
 				//type =Type.GetType("UnityEngine.GameObject");
 				type = GetType(prefType.Value.ToString());
-				var instance = Construct(type, name);
+				UnityEngine.Object instance = (UnityEngine.Object) Construct(type, name);
+				if(Application.isEditor){
+					//UnityEngine.Object.DestroyImmediate(instance);
+				}else{
+					//UnityEngine.Object.Destroy(instance);
+				}
 				//Debug.Log(instance);
 			}catch(Exception e){
 				Debug.Log (e.Message);
@@ -142,14 +147,47 @@ namespace Utils{
 		}
 		private dynamic Construct(Type type, string name){
 			//instance = Activator.CreateInstance(type);
+			List<string> keys = new List<string>();
 			switch(type.FullName){
+
 			case "UnityEngine.GameObject":
 				Debug.Log("GameObject Init");
-				return null;
+				keys.Clear();
+				foreach (var entry in mapping.Children){
+					keys.Add(entry.Key.ToString());
+				}
+				GameObject go = new GameObject(name);
+				Type comp;
+				if(keys.Exists(x=>x=="components")){
+					List<string> components = new List<string>();
+					List<string> componentParams = new List<string>();
+					var items = (YamlSequenceNode)mapping.Children[new YamlScalarNode("components")];
+					foreach (YamlMappingNode item in items){
+						comp = null;
+						componentParams.Clear();
+						foreach(var par in item.Children){
+							componentParams.Add(par.Key.ToString());
+						}
+						if(!componentParams.Exists(x=>x=="component")){
+							continue;
+						}
+						comp = GetType("UnityEngine."+item.Children[new YamlScalarNode("component")].ToString());
+						if(comp==null){
+							continue;
+						}
+						go.AddComponent(comp);
+						foreach(string param in componentParams){
+							if(param!="component"){
+
+							}
+						}
+					}
+				}
+				return go;
 				break;
 			case "UnityEngine.Material":
 				Debug.Log("Material Init");
-				List<string> keys = new List<string>();
+				keys.Clear();
 				foreach (var entry in mapping.Children){
 					keys.Add(entry.Key.ToString());
 				}
@@ -237,8 +275,10 @@ namespace Utils{
 		public dynamic GetInstance(){
 			switch(type.FullName){
 			case "UnityEngine.Material":
-				if(instance==null)
+				if(instance==null){
 					instance=Construct(type,name);
+					//AssetDatabase.CreateAsset(material,("Assets/Resources/"+name.ToString()+".mat"));
+				}
 				return instance;
 				break;
 			case "UnityEngine.Texture":

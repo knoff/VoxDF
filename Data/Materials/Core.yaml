@@ -4,18 +4,18 @@ params:
   - type: Color
     name: Color
     value: 0.5 0.5 0.5 1.0
-  - type: Texture
-    name: MainTex
-    value: Textures/Core
+#  - type: Texture
+#    name: MainTex
+#    value: Textures/Core
 #  - type: Range
 #    name: Cutoff
 #    value: 0.0 1.0
 #  - type: Range
 #    name: Glossiness
 #    value: 0.0 1.0
-#  - type: Range
-#    name: Metallic
-#    value: 0.0 1.0
+  - type: Range
+    name: Metallic
+    value: 0.2 0.8
 #  - type: Texture
 #    name: MetallicGlossMap
 #    value: Textures/CoreMG
