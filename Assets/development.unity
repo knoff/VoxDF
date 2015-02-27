@@ -388,3 +388,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   errorFile: error.log
+  logFile: log.log
+  log: 0
