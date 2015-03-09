@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System;
+using Assimp;
+using Assimp.Configs;
 
 namespace Utils{
 	public class EnitityLoader : MonoBehaviour {
@@ -13,9 +15,22 @@ namespace Utils{
 
 		// Use this for initialization
 		void Start () {
+			string fileName = dataFolder+@"Models/sphere.fbx";
+
+			AssimpContext importer = new AssimpContext();
+			NormalSmoothingAngleConfig config = new NormalSmoothingAngleConfig(66.0f);
+			importer.SetConfig(config);
+			Scene model = importer.ImportFile(fileName, PostProcessPreset.TargetRealTimeMaximumQuality);
+
+			Debug.Log(model.Meshes.Count);
+			model.Clear();
+			importer.Dispose();
+
+			/*
 			LoadPrefabFolder(dataFolder+@"Materials/");
 			LoadPrefabFolder(dataFolder+@"Blocks/");
 			Debug.Log(GetPrefab("Materials/Core").GetInstance());
+			*/
 		}
 		
 		// Update is called once per frame
@@ -56,7 +71,7 @@ namespace Utils{
 				CustomPrefab prefab = new CustomPrefab(prefabName, fileContent);
 				if(prefab.PrepAndVerify()){
 					prefabs.Add (prefabName, prefab);
-					Debug.Log("Prefab "+prefabName+" loaded");
+					//Debug.Log("Prefab "+prefabName+" loaded");
 				}
 			}
 		}

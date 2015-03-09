@@ -5,6 +5,8 @@ using System;
 using System.IO;
 using System.Reflection;
 using YamlDotNet.RepresentationModel;
+using Assimp;
+using Assimp.Configs;
 
 namespace Utils{
 	public class CustomPrefab {
@@ -32,6 +34,15 @@ namespace Utils{
 			{"white",Color.white},
 			{"yellow",Color.yellow}
 		};
+		static private Dictionary<string,Type> Components = new Dictionary<string,Type>{
+			{"MeshFilter",GetType("UnityEngine.MeshFilter")},
+			{"Mesh",GetType("UnityEngine.MeshFilter")},
+			{"MeshRenderer",GetType("UnityEngine.MeshRenderer")},
+			{"Renderer",GetType("UnityEngine.MeshRenderer")},
+			{"Collider",GetType("UnityEngine.BoxCollider")},
+			{"BoxCollider",GetType("UnityEngine.BoxCollider")},
+			{"SphereCollider",GetType("UnityEngine.SphereCollider")}
+		};
 
 		Dictionary <string, string> properties = new Dictionary<string, string>();
 
@@ -55,7 +66,7 @@ namespace Utils{
 		}
 
 		public GameObject Instantiate(){
-			GameObject go = GameObject.CreatePrimitive(PrimitiveType.Cube);
+			GameObject go = GameObject.CreatePrimitive(UnityEngine.PrimitiveType.Cube);
 			go.name = name;
 			//CustomComponentBase c = UnityEngineInternal.APIUpdaterRuntimeServices.AddComponent(go, "Assets/Utils/Scripts/CustomPrefabs/CustomPrefab.cs (32,29)", properties["component"]) as CustomComponentBase;
 			CustomComponentBase c = go.AddComponent(Type.GetType(properties["component"])) as CustomComponentBase;
@@ -151,13 +162,14 @@ namespace Utils{
 			switch(type.FullName){
 
 			case "UnityEngine.GameObject":
-				Debug.Log("GameObject Init");
+				//Debug.Log("GameObject Init");
 				keys.Clear();
 				foreach (var entry in mapping.Children){
 					keys.Add(entry.Key.ToString());
 				}
 				GameObject go = new GameObject(name);
 				Type comp;
+				UnityEngine.Component component;
 				if(keys.Exists(x=>x=="components")){
 					List<string> components = new List<string>();
 					List<string> componentParams = new List<string>();
@@ -171,14 +183,43 @@ namespace Utils{
 						if(!componentParams.Exists(x=>x=="component")){
 							continue;
 						}
-						comp = GetType("UnityEngine."+item.Children[new YamlScalarNode("component")].ToString());
-						if(comp==null){
+						//comp = GetType("UnityEngine."+item.Children[new YamlScalarNode("component")].ToString());
+						if(!Components.TryGetValue(item.Children[new YamlScalarNode("component")].ToString(),out comp)){
 							continue;
 						}
-						go.AddComponent(comp);
+						//if(comp==null){
+						//	continue;
+						//}
+						component = go.AddComponent(comp);
+						Type t = component.GetType();
+						/*System.Reflection.FieldInfo[] fieldInfo = t.GetFields();
+						foreach (System.Reflection.FieldInfo info in fieldInfo)
+							Debug.Log("Field:" +info.Name);
+						
+						System.Reflection.PropertyInfo[] propertyInfo = t.GetProperties();
+						foreach (System.Reflection.PropertyInfo info in propertyInfo)
+							Debug.Log("Prop:"+info.Name);
+	*/
 						foreach(string param in componentParams){
 							if(param!="component"){
+								string value = item.Children[new YamlScalarNode(param)].ToString();
+								string tp = "string";
+								if(value.IndexOf(' ')>=0){
+									tp = value.Substring(0,value.IndexOf(' '));
+									value = value.Substring(value.IndexOf(' ')+1);
+								}
+								System.Reflection.PropertyInfo propertyInfo = t.GetProperty(param);
+								if (propertyInfo!=null)
+									Debug.Log("Prop:"+propertyInfo.PropertyType);
+								//FieldInfo info = component.GetType().GetField("mesh");
+								//Debug.Log (component.GetType().GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).Length);
+								//Debug.Log (component.GetType().GetProperty(param).GetType().ToString());
+								//Debug.Log(tp+"|"+value);
+								try{
+									//component.GetType().InvokeMember(param,BindingFlags.Instance | BindFlags.Public | BindFlags.SetProperty | Type.DefaultBinder, component, 
+								}catch{
 
+								}
 							}
 						}
 					}
@@ -186,7 +227,7 @@ namespace Utils{
 				return go;
 				break;
 			case "UnityEngine.Material":
-				Debug.Log("Material Init");
+				//Debug.Log("Material Init");
 				keys.Clear();
 				foreach (var entry in mapping.Children){
 					keys.Add(entry.Key.ToString());
@@ -195,7 +236,7 @@ namespace Utils{
 					throw new Exception("No shader for material");
 				}
 				YamlScalarNode value = (YamlScalarNode) mapping.Children[new YamlScalarNode("shader")];
-				Material instance = new Material(Shader.Find(value.Value));
+				UnityEngine.Material instance = new UnityEngine.Material(Shader.Find(value.Value));
 				instance.name = name;
 				/*foreach(string key in keys){
 					if(key=="type"||key=="shader")
@@ -240,8 +281,8 @@ namespace Utils{
 			}
 			return null;
 		}
-		private Texture GetYamlTexture(string name){
-			return new Texture();
+		private UnityEngine.Texture GetYamlTexture(string name){
+			return new UnityEngine.Texture();
 		}
 		private Color GetYamlColor(string color){
 			string[] rgba = color.Split(' ');

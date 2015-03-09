@@ -1,7 +1,9 @@
 type: UnityEngine.GameObject
 components:
   - component: MeshFilter
-    mesh: Mesh Cube
+    mesh: Cube
+    test: 123
   - component: MeshRenderer
+  - component: SphereCollider
 #  - component: Collider
 #  - component: Block
