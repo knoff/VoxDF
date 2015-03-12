@@ -17,15 +17,21 @@ namespace Utils{
 		void Start () {
 			string fileName = dataFolder+@"Models/sphere.fbx";
 
-			AssimpContext importer = new AssimpContext();
+			//AssimpContext importer = new AssimpContext();
+			AssimpImporter importer = new AssimpImporter();
 			NormalSmoothingAngleConfig config = new NormalSmoothingAngleConfig(66.0f);
 			importer.SetConfig(config);
-			Scene model = importer.ImportFile(fileName, PostProcessPreset.TargetRealTimeMaximumQuality);
-
-			Debug.Log(model.Meshes.Count);
-			model.Clear();
+			Scene model;
+			//Debug.Log (PostProcessPreset.TargetRealTimeMaximumQuality);
+			model = importer.ImportFile(fileName, PostProcessPreset.TargetRealTimeMaximumQuality);
+			Debug.Log("SceneInfo"+
+			          "\n  Meshes:\t "+model.MeshCount+
+			          "\n  Lights:\t "+model.LightCount+
+			          "\n  Cameras: "+model.CameraCount+
+			          "\n  Materials: "+model.MaterialCount+
+			          "\n  Textures:\t "+model.TextureCount);
+			//model.Clear();
 			importer.Dispose();
-
 			/*
 			LoadPrefabFolder(dataFolder+@"Materials/");
 			LoadPrefabFolder(dataFolder+@"Blocks/");
