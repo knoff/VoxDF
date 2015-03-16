@@ -1,17 +1,14 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using Utils;
 namespace World{
 	public class World : Singleton<World> {
-
-		// Use this for initialization
-		void Start () {
-
-		}
-		
-		// Update is called once per frame
-		void Update () {
-		
+		public Dictionary<Vector2,Biome> biomes = new Dictionary<Vector2, Biome>();
+		public List<string> biomesAv = new List<string>();
+		public bool Generate(){
+			Dictionary<Vector2,Biome> biomes = new Dictionary<Vector2, Biome>();
+			return false;
 		}
 	}
 }

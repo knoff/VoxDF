@@ -1,4 +1,4 @@
-type: UnityEngine.GameObject
+gtype: UnityEngine.GameObject
 #model: Models/sphere.fbx
 components:
   - component: MeshFilter

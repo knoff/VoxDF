@@ -12,6 +12,7 @@ namespace Utils{
 	public class CustomPrefab {
 		public string name;
 		private string data;
+		public Type gtype;
 		public Type type;
 		private List<string> tags = new List<string>();
 		private List<string> components = new List<string>();
@@ -110,12 +111,29 @@ namespace Utils{
 			yaml.Load(input);
 			mapping =
 				(YamlMappingNode)yaml.Documents[0].RootNode;
+			List<string> keys = new List<string>();
+			keys.Clear();
+			foreach (var entry in mapping.Children){;
+				keys.Add(entry.Key.ToString());
+			}
+			UnityEngine.Object instance=null;
 			// Try to get Prefab Type. It can be Exists Class As examle: UnityEngine.GameObject, UnityEngine.Material...
 			try{
-				YamlScalarNode prefType = (YamlScalarNode) mapping.Children[new YamlScalarNode("type")];
+				if(!keys.Exists(x=>x=="gtype"))
+					throw new Exception("Global type is not exists in prefab "+name);
+				YamlScalarNode prefType = (YamlScalarNode) mapping.Children[new YamlScalarNode("gtype")];
+				if(keys.Exists(x=>x=="type")){
+				    YamlScalarNode prefMainComponentType = (YamlScalarNode) mapping.Children[new YamlScalarNode("type")];
+					type = GetType(prefMainComponentType.Value.ToString());
+					if(type==null){
+						throw new Exception("Type \""+prefMainComponentType.Value.ToString()+"\" is not registered in system.");
+					}
+				}else{
+					type = GetType ("UnityEngine.GameObject");
+				}
 				//type =Type.GetType("UnityEngine.GameObject");
-				type = GetType(prefType.Value.ToString());
-				UnityEngine.Object instance = (UnityEngine.Object) Construct(type, name);
+				gtype = GetType(prefType.Value.ToString());
+				instance = (UnityEngine.Object) Construct(gtype, name);
 				if(Application.isEditor){
 					//UnityEngine.Object.DestroyImmediate(instance);
 				}else{
@@ -124,6 +142,13 @@ namespace Utils{
 				//Debug.Log(instance);
 			}catch(Exception e){
 				Debug.Log (e.Message);
+				if(instance==null)
+					return false;
+				if(Application.isEditor){
+					UnityEngine.Object.DestroyImmediate(instance);
+				}else{
+					UnityEngine.Object.Destroy(instance);
+				}
 				return false;
 			}
 			/*
@@ -150,19 +175,22 @@ namespace Utils{
 			var type = Type.GetType(typeName);
 			if(type!=null)
 				return type;
-			var assemblyName = typeName.Substring(0, typeName.IndexOf('.'));
+			string assemblyName = "UnityEngine";
+			if(typeName.IndexOf('.')>=0){
+				assemblyName = typeName.Substring(0, typeName.IndexOf('.'));
+			}
 			var assembly = Assembly.Load(assemblyName);
 			if(assembly == null)
 				return null;
-
 			return assembly.GetType(typeName);
 		}
-		private dynamic Construct(Type type, string name){
+		private dynamic Construct(Type gtype, string name){
 			//instance = Activator.CreateInstance(type);
 			List<string> keys = new List<string>();
-			switch(type.FullName){
+			switch(gtype.FullName){
 			case "UnityEngine.GameObject":
 				//Debug.Log("GameObject Init");
+				bool mainComponentAdded = false;
 				keys.Clear();
 				foreach (var entry in mapping.Children){
 					keys.Add(entry.Key.ToString());
@@ -190,7 +218,7 @@ namespace Utils{
 					List<string> componentParams = new List<string>();
 					foreach (var entry in mapping.Children)
 					{
-						Debug.Log(((YamlScalarNode)entry.Key).Value);
+						//Debug.Log(((YamlScalarNode)entry.Key).Value);
 					}
 					YamlSequenceNode items = (YamlSequenceNode)mapping.Children[new YamlScalarNode("components")];
 					foreach (YamlMappingNode item in items){
@@ -205,14 +233,15 @@ namespace Utils{
 						//comp = GetType("UnityEngine."+item.Children[new YamlScalarNode("component")].ToString());
 						if(!Components.TryGetValue(item.Children[new YamlScalarNode("component")].ToString(),out comp)){
 							comp = GetType (item.Children[new YamlScalarNode("component")].ToString());
-
 						}
 						if(comp==null){
 						    continue;
 						}
-
 						component = go.AddComponent(comp);
 						Type t = component.GetType();
+						if(this.type==t){
+							mainComponentAdded = true;
+						}
 						/*System.Reflection.FieldInfo[] fieldInfo = t.GetFields();
 						foreach (System.Reflection.FieldInfo info in fieldInfo)
 							Debug.Log("Field:" +info.Name);
@@ -243,6 +272,9 @@ namespace Utils{
 							}
 						}
 					}
+				}
+				if((!mainComponentAdded)&&(typeof(UnityEngine.Component).IsAssignableFrom(this.type))){
+					go.AddComponent(this.type);
 				}
 				return go;
 				break;
@@ -334,17 +366,17 @@ namespace Utils{
 		}
 
 		public dynamic Instance(){
-			switch(type.FullName){
+			switch(gtype.FullName){
 			case "UnityEngine.Material":
 				if(instance==null){
-					instance=Construct(type,name);
+					instance=Construct(gtype,name);
 					//AssetDatabase.CreateAsset(material,("Assets/Resources/"+name.ToString()+".mat"));
 				}
 				return instance;
 				break;
 			case "UnityEngine.Texture":
 				if(instance==null)
-					instance=Construct(type,name);
+					instance=Construct(gtype,name);
 				return instance;
 				break;
 			default:

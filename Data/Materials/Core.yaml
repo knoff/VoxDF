@@ -1,4 +1,4 @@
-type: UnityEngine.Material
+gtype: UnityEngine.Material
 shader: Standard
 params:
   - type: Color

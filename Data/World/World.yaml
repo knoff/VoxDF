@@ -1,3 +1,6 @@
-type: UnityEngine.GameObject
+gtype: UnityEngine.GameObject
 components:
   - component: World.World
+    biomesAv:
+      - biome: World/Biomes/Flats
+      - biome: World/Biomes/Hills
