@@ -1,9 +1,10 @@
 type: UnityEngine.GameObject
+#model: Models/sphere.fbx
 components:
   - component: MeshFilter
-    mesh: Cube
-    test: 123
+#    mesh: Cube
+#    test: 123
   - component: MeshRenderer
-  - component: SphereCollider
+#  - component: SphereCollider
 #  - component: Collider
 #  - component: Block

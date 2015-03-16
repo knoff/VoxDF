@@ -7,7 +7,7 @@ using Assimp;
 using Assimp.Configs;
 
 namespace Utils{
-	public class EnitityLoader : MonoBehaviour {
+	public class AssetsManager : Singleton<AssetsManager> {
 
 		string dataFolder = @"Data/";
 		private Dictionary<string, CustomPrefab> prefabs = new Dictionary<string, CustomPrefab>();
@@ -15,28 +15,8 @@ namespace Utils{
 
 		// Use this for initialization
 		void Start () {
-			string fileName = dataFolder+@"Models/sphere.fbx";
-
-			//AssimpContext importer = new AssimpContext();
-			AssimpImporter importer = new AssimpImporter();
-			NormalSmoothingAngleConfig config = new NormalSmoothingAngleConfig(66.0f);
-			importer.SetConfig(config);
-			Scene model;
-			//Debug.Log (PostProcessPreset.TargetRealTimeMaximumQuality);
-			model = importer.ImportFile(fileName, PostProcessPreset.TargetRealTimeMaximumQuality);
-			Debug.Log("SceneInfo"+
-			          "\n  Meshes:\t "+model.MeshCount+
-			          "\n  Lights:\t "+model.LightCount+
-			          "\n  Cameras: "+model.CameraCount+
-			          "\n  Materials: "+model.MaterialCount+
-			          "\n  Textures:\t "+model.TextureCount);
-			//model.Clear();
-			importer.Dispose();
-			/*
-			LoadPrefabFolder(dataFolder+@"Materials/");
-			LoadPrefabFolder(dataFolder+@"Blocks/");
-			Debug.Log(GetPrefab("Materials/Core").GetInstance());
-			*/
+			//LoadPrefabFolder(dataFolder+@"Materials/");
+			//LoadPrefabFolder(dataFolder+@"Blocks/");
 		}
 		
 		// Update is called once per frame
@@ -74,11 +54,13 @@ namespace Utils{
 			if(!prefabs.ContainsKey(prefabName)||force){
 				StreamReader sr = new StreamReader(dataFolder+prefabName+".yaml");
 				string fileContent = sr.ReadToEnd();
+				sr.Close();
 				CustomPrefab prefab = new CustomPrefab(prefabName, fileContent);
 				if(prefab.PrepAndVerify()){
 					prefabs.Add (prefabName, prefab);
 					//Debug.Log("Prefab "+prefabName+" loaded");
 				}
+
 			}
 		}
 		public CustomPrefab GetPrefab(string prefabName){

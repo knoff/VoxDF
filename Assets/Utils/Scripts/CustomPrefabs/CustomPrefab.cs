@@ -41,7 +41,8 @@ namespace Utils{
 			{"Renderer",GetType("UnityEngine.MeshRenderer")},
 			{"Collider",GetType("UnityEngine.BoxCollider")},
 			{"BoxCollider",GetType("UnityEngine.BoxCollider")},
-			{"SphereCollider",GetType("UnityEngine.SphereCollider")}
+			{"SphereCollider",GetType("UnityEngine.SphereCollider")},
+			{"MeshCollider",null}
 		};
 
 		Dictionary <string, string> properties = new Dictionary<string, string>();
@@ -160,7 +161,6 @@ namespace Utils{
 			//instance = Activator.CreateInstance(type);
 			List<string> keys = new List<string>();
 			switch(type.FullName){
-
 			case "UnityEngine.GameObject":
 				//Debug.Log("GameObject Init");
 				keys.Clear();
@@ -170,10 +170,29 @@ namespace Utils{
 				GameObject go = new GameObject(name);
 				Type comp;
 				UnityEngine.Component component;
+				if(keys.Exists(x=>x=="model")){
+					//string fileName = dataFolder+@"Models/sphere.fbx";
+					//AssimpImporter importer = new AssimpImporter();
+					//NormalSmoothingAngleConfig config = new NormalSmoothingAngleConfig(66.0f);
+					//importer.SetConfig(config);
+					//Scene model = importer.ImportFile(fileName, PostProcessPreset.TargetRealTimeMaximumQuality);
+					/*Debug.Log("SceneInfo"+
+			          "\n  Meshes:\t "+model.MeshCount+
+			          "\n  Lights:\t "+model.LightCount+
+			          "\n  Cameras: "+model.CameraCount+
+			          "\n  Materials: "+model.MaterialCount+
+			          "\n  Textures:\t "+model.TextureCount);
+					*/
+					//importer.Dispose();
+				}
 				if(keys.Exists(x=>x=="components")){
 					List<string> components = new List<string>();
 					List<string> componentParams = new List<string>();
-					var items = (YamlSequenceNode)mapping.Children[new YamlScalarNode("components")];
+					foreach (var entry in mapping.Children)
+					{
+						Debug.Log(((YamlScalarNode)entry.Key).Value);
+					}
+					YamlSequenceNode items = (YamlSequenceNode)mapping.Children[new YamlScalarNode("components")];
 					foreach (YamlMappingNode item in items){
 						comp = null;
 						componentParams.Clear();
@@ -185,11 +204,13 @@ namespace Utils{
 						}
 						//comp = GetType("UnityEngine."+item.Children[new YamlScalarNode("component")].ToString());
 						if(!Components.TryGetValue(item.Children[new YamlScalarNode("component")].ToString(),out comp)){
-							continue;
+							comp = GetType (item.Children[new YamlScalarNode("component")].ToString());
+
 						}
-						//if(comp==null){
-						//	continue;
-						//}
+						if(comp==null){
+						    continue;
+						}
+
 						component = go.AddComponent(comp);
 						Type t = component.GetType();
 						/*System.Reflection.FieldInfo[] fieldInfo = t.GetFields();
@@ -198,8 +219,7 @@ namespace Utils{
 						
 						System.Reflection.PropertyInfo[] propertyInfo = t.GetProperties();
 						foreach (System.Reflection.PropertyInfo info in propertyInfo)
-							Debug.Log("Prop:"+info.Name);
-	*/
+							Debug.Log("Prop:"+info.Name);*/
 						foreach(string param in componentParams){
 							if(param!="component"){
 								string value = item.Children[new YamlScalarNode(param)].ToString();
@@ -313,7 +333,7 @@ namespace Utils{
 			return c;
 		}
 
-		public dynamic GetInstance(){
+		public dynamic Instance(){
 			switch(type.FullName){
 			case "UnityEngine.Material":
 				if(instance==null){
