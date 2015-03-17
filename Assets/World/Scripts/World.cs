@@ -7,8 +7,17 @@ namespace World{
 		public Dictionary<Vector2,Biome> biomes = new Dictionary<Vector2, Biome>();
 		public List<string> biomesAv = new List<string>();
 		public bool Generate(){
+			Debug.Log ("!!!");
 			Dictionary<Vector2,Biome> biomes = new Dictionary<Vector2, Biome>();
-			return false;
+			VoronoiDiagram.Instance.Generate();
+			return false;	
+		}
+
+		/*void OnDrawGizmoz(){
+			VoronoiDiagram.Instance.ShowGizmos();
+		}*/
+		void OnDrawGizmosSelected(){
+			VoronoiDiagram.Instance.ShowGizmos();
 		}
 	}
 }
