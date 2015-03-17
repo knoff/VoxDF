@@ -19,7 +19,7 @@ public class world_test : MonoBehaviour {
 		foreach(CustomPrefab biome in biomes){
 			Debug.Log(biome.name);
 		}
-		World.World.Instance.Generate();
+		World.World.Instance.Map(512);
 	}
 	
 	// Update is called once per frame
