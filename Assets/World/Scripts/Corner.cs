@@ -15,7 +15,7 @@ namespace World
 	public class Corner
 	{
 		public int index;
-		public Vector2 point;		// location
+		public Vector2f point;		// location
 		public bool ocean;			// ocean
 		public bool water;			// lake or ocean
 		public bool coast;			// touches ocean and land polygons

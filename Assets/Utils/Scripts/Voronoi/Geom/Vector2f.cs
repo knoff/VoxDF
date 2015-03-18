@@ -1,4 +1,5 @@
-﻿using System;
+﻿using UnityEngine;
+using System;
 
 // Recreation of the UnityEngine.Vector3, so it can be used in other thread
 public struct Vector2f {
@@ -38,6 +39,14 @@ public struct Vector2f {
 	public static Vector2f Normalize(Vector2f a) {
 		float magnitude = a.magnitude;
 		return new Vector2f(a.x/magnitude, a.y/magnitude);
+	}
+
+	public static Vector2f Lerp(Vector2f a, Vector2f b, float t){
+		//Vector2 _a = new Vector2(a.x,a.y);
+		//Vector2 _b = new Vector2(b.x,b.y);
+		//Vector2 res = Vector2.Lerp(_a,_b,t);
+		//return new Vector2f(res.x,res.y);
+		return (Vector2f) Vector2.Lerp((Vector2) a,(Vector2) b, t);
 	}
 	
 	public override bool Equals(object other) {
@@ -93,5 +102,11 @@ public struct Vector2f {
 	}
 	public static Vector2f Max(Vector2f a, Vector2f b) {
 		return new Vector2f(Math.Max(a.x, b.x), Math.Max(a.y, b.y));
+	}
+	public static explicit operator Vector2(Vector2f v2f){
+		return new Vector2(v2f.x,v2f.y);
+	}
+	public static implicit operator Vector2f(Vector2 v2){
+		return new Vector2f(v2.x,v2.y);
 	}
 }

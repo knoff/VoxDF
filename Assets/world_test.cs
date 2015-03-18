@@ -20,7 +20,7 @@ public class world_test : MonoBehaviour {
 			Debug.Log(biome.name);
 		}
 		World.World.Instance.Map(512);
-		World.World.Instance.Go (1,1);
+		World.World.Instance.Go (0,2);
 	}
 	
 	// Update is called once per frame

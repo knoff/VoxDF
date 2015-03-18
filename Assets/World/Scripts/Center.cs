@@ -15,7 +15,7 @@ namespace World
 	public class Center
 	{
 		public int index;
-		public Vector2 point;		// location
+		public Vector2f point;		// location
 		public bool water;			// lake or ocean
 		public bool ocean;			// ocean
 		public bool coast;			// land polygon touching an ocean

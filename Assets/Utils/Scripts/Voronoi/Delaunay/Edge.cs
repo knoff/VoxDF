@@ -293,5 +293,12 @@ namespace csDelaunay {
 			}
 		}
 		#endregion
+		public LineSegment DelaunayLine(){
+			return new LineSegment(this.LeftSite.Coord,this.RightSite.Coord);
+		}
+		public LineSegment VoronoiLine(){
+			if(!this.Visible()) return new LineSegment(new Vector2f(),new Vector2f());
+			return new LineSegment(this.clippedVertices[LR.LEFT],this.clippedVertices[LR.RIGHT]);
+		}
 	}
 }
