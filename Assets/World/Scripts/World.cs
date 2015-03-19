@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using Utils;
 using csDelaunay;
+using System.Linq;
 namespace World{
 	public class World : Singleton<World> {
 		public float size=512;
@@ -155,6 +156,16 @@ namespace World{
 			}
 		}
 
+		public List<Corner> LandCorners(List<Corner> corners){
+			List<Corner> locations = new List<Corner> ();
+			foreach(Corner q in corners){
+				if(!q.ocean && !q.coast){
+					locations.Add(q);
+				}
+			}
+			return locations;
+		}
+
 		public void BuildGraph(List<Vector2f> points, Voronoi voronoi){
 			Center p;
 			//Corner q;
@@ -294,6 +305,21 @@ namespace World{
 				}
 			}
 		}
+
+		public void RedistributeElevations(List<Corner> locations){
+			float scaleFactor = 1.1f;
+			float lx, ly;
+			//Corner c = new Corner();
+			//c.elevation
+			locations = locations.OrderBy (x => x.elevation).ToList ();
+			for (int i=0; i<locations.Count; i++) {
+				ly = i/(locations.Count-1);
+				lx = Mathf.Sqrt(scaleFactor)-Mathf.Sqrt(scaleFactor*(1-ly));
+				if(lx>1.0f) lx = 1.0f;
+				locations[i].elevation = lx;
+			}
+		}
+
 		public void AssignOceanCoastAndLand(){
 			List<Center> queue = new List<Center>();
 			foreach(Center _p in centers){
